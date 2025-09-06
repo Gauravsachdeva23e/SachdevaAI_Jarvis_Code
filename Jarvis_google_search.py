@@ -17,10 +17,11 @@ import os
 import requests
 import logging
 from livekit.agents import function_tool
+from langchain.tools import tool
 
 logger = logging.getLogger(__name__)
 
-@function_tool()
+@tool
 async def google_search(query: str) -> str:
     """
     Searches Google and returns the top 3 results with heading and summary only.
@@ -75,8 +76,7 @@ async def google_search(query: str) -> str:
 
     return formatted.strip()
 
-
-@function_tool()
+@tool
 async def get_current_datetime() -> str:
     """
     Returns the current date and time in a human-readable format.

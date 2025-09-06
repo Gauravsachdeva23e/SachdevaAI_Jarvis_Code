@@ -6,6 +6,8 @@ from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
 from typing import List
 from livekit.agents import function_tool
+from langchain.tools import tool
+import codecs
 
 # ---------------------
 # SafeController Class
@@ -81,16 +83,31 @@ class SafeController:
         return f"🖱️ Scrolled {direction}"
 
     async def type_text(self, text: str):
-        if not self.is_active(): return "🛑 Controller is inactive."
+        if not self.is_active():
+            return "🛑 Controller is inactive."
+
+        # Fix: convert escaped sequences into real ones
+        text = codecs.decode(text, "unicode_escape")
+
         for char in text:
-            if not char.isprintable():
-                continue
             try:
-                self.keyboard.press(char)
-                self.keyboard.release(char)
+                if char == "\n":
+                    self.keyboard.press(Key.enter)
+                    self.keyboard.release(Key.enter)
+                elif char == "\t":
+                    self.keyboard.press(Key.tab)
+                    self.keyboard.release(Key.tab)
+                elif char.isprintable():
+                    self.keyboard.press(char)
+                    self.keyboard.release(char)
+                else:
+                    continue
+
                 await asyncio.sleep(0.05)
+
             except Exception:
                 continue
+
         self.log(f"Typed text: {text}")
         return f"⌨️ Typed: {text}"
 
@@ -156,7 +173,7 @@ async def with_temporary_activation(fn, *args, **kwargs):
     controller.deactivate()
     return result
 
-@function_tool()
+@tool
 async def move_cursor_tool(direction: str, distance: int = 100):
 
     """
@@ -176,7 +193,7 @@ async def move_cursor_tool(direction: str, distance: int = 100):
 
     return await with_temporary_activation(controller.move_cursor, direction, distance)
 
-@function_tool()
+@tool
 async def mouse_click_tool(button: str = "left"):
 
     """
@@ -199,7 +216,7 @@ async def mouse_click_tool(button: str = "left"):
 
     return await with_temporary_activation(controller.mouse_click, button)
 
-@function_tool()
+@tool
 async def scroll_cursor_tool(direction: str, amount: int = 10):
 
     """
@@ -222,7 +239,7 @@ async def scroll_cursor_tool(direction: str, amount: int = 10):
 
     return await with_temporary_activation(controller.scroll_cursor, direction, amount)
 
-@function_tool()
+@tool
 async def type_text_tool(text: str):
 
     """
@@ -236,11 +253,9 @@ async def type_text_tool(text: str):
     Returns:
         str: A message confirming the typed input.
     """
-
-
     return await with_temporary_activation(controller.type_text, text)
 
-@function_tool()
+@tool
 async def press_key_tool(key: str):
 
     """
@@ -258,7 +273,7 @@ async def press_key_tool(key: str):
 
     return await with_temporary_activation(controller.press_key, key)
 
-@function_tool()
+@tool
 async def press_hotkey_tool(keys: List[str]):
 
     """
@@ -277,7 +292,7 @@ async def press_hotkey_tool(keys: List[str]):
 
     return await with_temporary_activation(controller.press_hotkey, keys)
 
-@function_tool()
+@tool
 async def control_volume_tool(action: str):
 
     """
@@ -296,7 +311,7 @@ async def control_volume_tool(action: str):
 
     return await with_temporary_activation(controller.control_volume, action)
 
-@function_tool()
+@tool
 async def swipe_gesture_tool(direction: str):
 
     """

@@ -71,4 +71,4 @@ class MemoryExtractor:
                 self.saved_message_count = len(current_chat_history)
             
             else:
-                logging.info("No new messages to save. Skipping.")
+                pass

@@ -6,12 +6,6 @@ import asyncio
 from fuzzywuzzy import process
 
 try:
-    from livekit.agents import function_tool
-except ImportError:
-    def function_tool(func): 
-        return func
-
-try:
     import win32gui
     import win32con
 except ImportError:
@@ -22,6 +16,8 @@ try:
     import pygetwindow as gw
 except ImportError:
     gw = None
+
+from langchain.tools import tool
 
 # Setup encoding and logger
 sys.stdout.reconfigure(encoding='utf-8')
@@ -39,7 +35,8 @@ APP_MAPPINGS = {
     "settings": "start ms-settings:",
     "paint": "mspaint",
     "vs code": "C:\\Users\\gaura\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
-    "postman": "C:\\Users\\gaura\\AppData\\Local\\Postman\\Postman.exe"
+    "postman": "C:\\Users\\gaura\\AppData\\Local\\Postman\\Postman.exe",
+    "Jio shpare browser": "C:\\Users\\Gaurav\\AppData\\Local\\JIO\\JioSphere\\Application\\JioSphere.exe"
 }
 
 # -------------------------
@@ -126,7 +123,7 @@ async def delete_item(path):
         return f"❌ Delete नहीं हुआ।: {e}"
 
 # App control
-@function_tool()
+@tool
 async def open_app(app_title: str) -> str:
 
     """
@@ -153,7 +150,7 @@ async def open_app(app_title: str) -> str:
     except Exception as e:
         return f"❌ {app_title} Launch नहीं हो पाया।: {e}"
 
-@function_tool()
+@tool
 async def close_app(window_title: str) -> str:
 
     """
@@ -180,7 +177,7 @@ async def close_app(window_title: str) -> str:
     return f"❌ Window बंद हो गई है।: {window_title}"
 
 # Jarvis command logic
-@function_tool()
+@tool
 async def folder_file(command: str) -> str:
 
     """

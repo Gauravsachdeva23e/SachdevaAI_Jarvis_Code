@@ -3,6 +3,7 @@ import requests
 import logging
 from dotenv import load_dotenv
 from livekit.agents import function_tool  # ✅ Correct decorator
+from langchain.tools import tool
 
 load_dotenv()
 
@@ -10,7 +11,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def detect_city_by_ip() -> str:
+async def get_current_city():
     try:
         response = requests.get("https://ipinfo.io", timeout=5)
         data = response.json()
@@ -18,7 +19,7 @@ def detect_city_by_ip() -> str:
     except Exception as e:
         return "Unknown"
 
-@function_tool()
+@tool
 async def get_weather(city: str = "") -> str:
 
     """
@@ -42,7 +43,7 @@ async def get_weather(city: str = "") -> str:
         return "Environment variables में OpenWeather API key नहीं मिली।"
 
     if not city:
-        city = detect_city_by_ip()
+        city = get_current_city()
 
     logger.info(f"City के लिए weather fetch किया जा रहा है।: {city}")
     url = "https://api.openweathermap.org/data/2.5/weather"
