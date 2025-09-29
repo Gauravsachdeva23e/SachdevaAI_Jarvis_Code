@@ -1,0 +1,91 @@
+2025-09-28 14:44:53.611723: Controller auto-activated.
+2025-09-28 14:44:59.237073: Typed text: I'm doing great, thank you! How are you doing today? Is there anything I can help you with?
+2025-09-28 14:45:01.252378: Controller auto-deactivated.
+2025-09-28 14:45:54.046375: Controller auto-activated.
+2025-09-28 14:46:10.867122: Controller auto-activated.
+2025-09-28 14:46:44.890733: Typed text: ```python
+def add(x, y):
+    return x + y
+
+def subtract(x, y):
+    return x - y
+
+def multiply(x, y):
+    return x * y
+
+def divide(x, y):
+    return x / y
+
+print("Select operation:")
+print("1.Add")
+print("2.Subtract")
+print("3.Multiply")
+print("4.Divide")
+
+while True:
+    choice = input("Enter choice(1/2/3/4): ")
+
+    if choice in ('1', '2', '3', '4'):
+        num1 = float(input("Enter first number: "))
+        num2 = float(input("Enter second number: "))
+
+        if choice == '1':
+            print(num1, "+", num2, "=", add(num1, num2))
+
+        elif choice == '2':
+            print(num1, "-", num2, "=", subtract(num1, num2))
+
+        elif choice == '3':
+            print(num1, "*", num2, "=", multiply(num1, num2))
+
+        elif choice == '4':
+            print(num1, "/", num2, "=", divide(num1, num2))
+        break
+    else:
+        print("Invalid Input")
+```
+2025-09-28 14:46:46.891821: Controller auto-deactivated.
+2025-09-28 14:47:04.779506: Typed text: ```python
+def add(x, y):
+    return x + y
+
+def subtract(x, y):
+    return x - y
+
+def multiply(x, y):
+    return x * y
+
+def divide(x, y):
+    if y == 0:
+        return "Cannot divide by zero"
+    return x / y
+
+print("Select operation:")
+print("1. Add")
+print("2. Subtract")
+print("3. Multiply")
+print("4. Divide")
+
+while True:
+    choice = input("Enter choice(1/2/3/4): ")
+
+    if choice in ('1', '2', '3', '4'):
+        num1 = float(input("Enter first number: "))
+        num2 = float(input("Enter second number: "))
+
+        if choice == '1':
+            print(num1, "+", num2, "=", add(num1, num2))
+
+        elif choice == '2':
+            print(num1, "-", num2, "=", subtract(num1, num2))
+
+        elif choice == '3':
+            print(num1, "*", num2, "=", multiply(num1, num2))
+
+        elif choice == '4':
+            print(num1, "/", num2, "=", divide(num1, num2))
+        break
+    else:
+        print("Invalid Input")
+```
+2025-09-28 14:47:06.768016: Controller auto-deactivated.

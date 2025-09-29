@@ -1,0 +1,279 @@
+# Jarvis AI Assistant - Enhanced Edition
+# .gitignore file for clean repository
+
+# ================================================================
+# Environment and Configuration Files
+# ================================================================
+
+# Environment variables (contains sensitive API keys)
+.env
+.env.local
+.env.production
+.env.development
+
+# Virtual environment
+jarvis_env/
+venv/
+env/
+ENV/
+
+# ================================================================
+# Python Files
+# ================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ================================================================
+# IDE and Editor Files
+# ================================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ================================================================
+# System Files
+# ================================================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Linux
+*~
+
+# ================================================================
+# Logs and Temporary Files
+# ================================================================
+
+# Log files
+logs/
+*.log
+*.log.*
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# ================================================================
+# Jarvis Specific Files
+# ================================================================
+
+# Sandbox and working directories
+JarvisSandbox/
+sandbox/
+workspace/
+
+# Generated files
+jarvis_agent.log
+jarvis_reasoning.log
+
+# Cache files
+.cache/
+*.cache
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# ================================================================
+# Media Files (Optional - uncomment if you don't want media files)
+# ================================================================
+
+# Audio files
+# *.mp3
+# *.wav
+# *.ogg
+# *.m4a
+
+# Video files
+# *.mp4
+# *.avi
+# *.mkv
+# *.mov
+
+# Image files (except documentation images)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.bmp
+# *.svg
+
+# ================================================================
+# Testing and Coverage
+# ================================================================
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Unit test / integration test artifacts
+.nox/
+.tox/
+.coverage
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ================================================================
+# Documentation Build Files
+# ================================================================
+
+# Sphinx documentation
+docs/_build/
+
+# MkDocs documentation
+site/
+
+# ================================================================
+# Backup Files
+# ================================================================
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# ================================================================
+# Package Manager Files
+# ================================================================
+
+# npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Conda
+.conda/
+
+# ================================================================
+# Security and Sensitive Files
+# ================================================================
+
+# SSH keys
+*.pem
+*.key
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# Certificate files
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# API keys and secrets
+secrets.json
+credentials.json
+auth.json
+
+# ================================================================
+# Jarvis Enhanced Edition Specific
+# ================================================================
+
+# Performance data
+performance_data/
+metrics/
+
+# Model cache
+model_cache/
+.cache/
+
+# User data
+user_data/
+conversations/
+
+# ================================================================
+# Keep Important Files
+# ================================================================
+
+# Force include important files even if they match patterns above
+!requirements.txt
+!setup_jarvis_environment.bat
+!run_jarvis.bat
+!LAUNCH_JARVIS.bat
+!agent.py
+!jarvis_reasoning.py
+!README*.md
+!*.py
+
+# Documentation files we want to keep
+!START_HERE.txt
+!READY_TO_USE_ENVIRONMENT.md
+!AGENT_ENHANCED_README.md
+!JARVIS_REASONING_IMPROVEMENTS.md

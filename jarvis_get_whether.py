@@ -12,21 +12,34 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 async def get_current_city():
+    """Get current city based on IP geolocation"""
     try:
         response = requests.get("https://ipinfo.io", timeout=5)
+        response.raise_for_status()
         data = response.json()
-        return data.get("city", "Unknown")
+        city = data.get("city", "Unknown")
+        logger.info(f"Detected current city: {city}")
+        return city
+    except requests.exceptions.RequestException as e:
+        logger.warning(f"Failed to get city from IP: {e}")
+        return "Unknown"
     except Exception as e:
+        logger.error(f"Unexpected error getting city: {e}")
         return "Unknown"
 
 @tool
 async def get_weather(city: str = "") -> str:
-
     """
     Gives current weather information for a given city.
 
     Use this tool when the user asks about weather, rain, temperature, humidity, or wind.
     If no city is given, detect city automatically.
+
+    Args:
+        city (str): City name to get weather for. If empty, uses current location.
+
+    Returns:
+        str: Formatted weather information or error message
 
     Example prompts:
     - "आज का मौसम कैसा है?"
@@ -39,11 +52,13 @@ async def get_weather(city: str = "") -> str:
     api_key = os.getenv("OPENWEATHER_API_KEY")
 
     if not api_key:
-        logger.error("OpenWeather API key missing है।")
-        return "Environment variables में OpenWeather API key नहीं मिली।"
+        logger.error("OpenWeather API key is missing")
+        return "Configuration error: OpenWeather API key not found in environment variables."
 
-    if not city:
-        city = get_current_city()
+    if not city or not city.strip():
+        city = await get_current_city()
+        
+    city = city.strip()
 
     logger.info(f"City के लिए weather fetch किया जा रहा है।: {city}")
     url = "https://api.openweathermap.org/data/2.5/weather"

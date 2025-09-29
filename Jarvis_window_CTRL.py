@@ -24,20 +24,59 @@ sys.stdout.reconfigure(encoding='utf-8')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# App command map
-APP_MAPPINGS = {
-    "notepad": "notepad",
-    "calculator": "calc",
-    "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    "vlc": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
-    "command prompt": "cmd",
-    "control panel": "control",
-    "settings": "start ms-settings:",
-    "paint": "mspaint",
-    "vs code": "C:\\Users\\gaura\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
-    "postman": "C:\\Users\\gaura\\AppData\\Local\\Postman\\Postman.exe",
-    "Jio shpare browser": "C:\\Users\\Gaurav\\AppData\\Local\\JIO\\JioSphere\\Application\\JioSphere.exe"
-}
+# App command map with dynamic path detection
+def get_app_mappings():
+    """Get app mappings with dynamic path detection"""
+    base_mappings = {
+        "notepad": "notepad",
+        "calculator": "calc",
+        "command prompt": "cmd",
+        "cmd": "cmd",
+        "control panel": "control",
+        "settings": "start ms-settings:",
+        "paint": "mspaint",
+        "file explorer": "explorer",
+        "task manager": "taskmgr",
+        "registry editor": "regedit",
+        "device manager": "devmgmt.msc"
+    }
+    
+    # Try to detect common applications dynamically
+    common_paths = {
+        "chrome": [
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+        ],
+        "firefox": [
+            "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+            "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+        ],
+        "vlc": [
+            "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
+            "C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe"
+        ],
+        "vs code": [
+            f"C:\\Users\\{os.environ.get('USERNAME', 'User')}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+            "C:\\Program Files\\Microsoft VS Code\\Code.exe"
+        ],
+        "postman": [
+            f"C:\\Users\\{os.environ.get('USERNAME', 'User')}\\AppData\\Local\\Postman\\Postman.exe"
+        ]
+    }
+    
+    # Add existing paths that exist on the system
+    for app, paths in common_paths.items():
+        for path in paths:
+            if os.path.exists(path):
+                base_mappings[app] = path
+                break
+        else:
+            # If no path found, just use the app name and let Windows find it
+            base_mappings[app] = app
+    
+    return base_mappings
+
+APP_MAPPINGS = get_app_mappings()
 
 # -------------------------
 # Global focus utility
@@ -58,16 +97,83 @@ async def focus_window(title_keyword: str) -> bool:
             return True
     return False
 
-# Index files/folders
-async def index_items(base_dirs):
+# Index files/folders with caching and performance optimization
+_index_cache = {}
+_cache_timestamp = {}
+CACHE_DURATION = 300  # 5 minutes
+
+async def index_items(base_dirs, max_depth=3, max_items=1000):
+    """Index files and folders with caching and limits for performance"""
+    import time
+    
+    cache_key = str(sorted(base_dirs))
+    current_time = time.time()
+    
+    # Check cache first
+    if (cache_key in _index_cache and 
+        cache_key in _cache_timestamp and 
+        current_time - _cache_timestamp[cache_key] < CACHE_DURATION):
+        logger.info(f"Using cached index with {len(_index_cache[cache_key])} items")
+        return _index_cache[cache_key]
+    
     item_index = []
+    items_processed = 0
+    
     for base_dir in base_dirs:
-        for root, dirs, files in os.walk(base_dir):
-            for d in dirs:
-                item_index.append({"name": d, "path": os.path.join(root, d), "type": "folder"})
-            for f in files:
-                item_index.append({"name": f, "path": os.path.join(root, f), "type": "file"})
-    logger.info(f"✅ Indexed {len(item_index)} items.")
+        if not os.path.exists(base_dir):
+            logger.warning(f"Directory does not exist: {base_dir}")
+            continue
+            
+        try:
+            for root, dirs, files in os.walk(base_dir):
+                # Limit search depth for performance
+                level = root.replace(base_dir, '').count(os.sep)
+                if level >= max_depth:
+                    dirs[:] = []  # Don't recurse deeper
+                    continue
+                
+                # Add folders
+                for d in dirs[:50]:  # Limit to first 50 dirs per level
+                    if items_processed >= max_items:
+                        break
+                    item_index.append({
+                        "name": d, 
+                        "path": os.path.join(root, d), 
+                        "type": "folder",
+                        "size": 0
+                    })
+                    items_processed += 1
+                
+                # Add files
+                for f in files[:100]:  # Limit to first 100 files per directory
+                    if items_processed >= max_items:
+                        break
+                    try:
+                        file_path = os.path.join(root, f)
+                        file_size = os.path.getsize(file_path)
+                        item_index.append({
+                            "name": f, 
+                            "path": file_path, 
+                            "type": "file",
+                            "size": file_size
+                        })
+                        items_processed += 1
+                    except (OSError, PermissionError):
+                        continue  # Skip files we can't access
+                
+                if items_processed >= max_items:
+                    logger.warning(f"Reached maximum items limit ({max_items}), stopping indexing")
+                    break
+                    
+        except (PermissionError, OSError) as e:
+            logger.warning(f"Cannot access directory {base_dir}: {e}")
+            continue
+    
+    # Cache the results
+    _index_cache[cache_key] = item_index
+    _cache_timestamp[cache_key] = current_time
+    
+    logger.info(f"✅ Indexed {len(item_index)} items from {len(base_dirs)} directories")
     return item_index
 
 async def search_item(query, index, item_type):

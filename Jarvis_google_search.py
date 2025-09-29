@@ -2,9 +2,8 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv
-from livekit.agents import function_tool  # ✅ Correct decorator
 from datetime import datetime
-from livekit import agents
+from langchain.tools import tool
 
 # Load environment variables
 load_dotenv()
@@ -13,22 +12,24 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-import os
-import requests
-import logging
-from livekit.agents import function_tool
-from langchain.tools import tool
-
-logger = logging.getLogger(__name__)
-
 @tool
 async def google_search(query: str) -> str:
     """
     Searches Google and returns the top 3 results with heading and summary only.
     No raw links are included to make speech output sound natural.
+    
+    Args:
+        query (str): The search query to look up
+        
+    Returns:
+        str: Formatted search results or error message
     """
 
-    logger.info(f"Query प्राप्त हुई: {query}")
+    if not query or not query.strip():
+        return "Please provide a valid search query."
+        
+    query = query.strip()
+    logger.info(f"Search query received: {query}")
 
     api_key = os.getenv("GOOGLE_SEARCH_API_KEY")
     search_engine_id = os.getenv("SEARCH_ENGINE_ID")
@@ -39,7 +40,8 @@ async def google_search(query: str) -> str:
             missing.append("GOOGLE_SEARCH_API_KEY")
         if not search_engine_id:
             missing.append("SEARCH_ENGINE_ID")
-        return f"Missing environment variables: {', '.join(missing)}"
+        logger.error(f"Missing environment variables: {missing}")
+        return f"Configuration error: Missing environment variables: {', '.join(missing)}"
 
     url = "https://www.googleapis.com/customsearch/v1"
     params = {
