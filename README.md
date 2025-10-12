@@ -48,14 +48,19 @@ This project demonstrates how to connect real-world tools with LLMs to build a c
 - cd SachdevaAI_Jarvis_Code
 
 
-<h1> How to run Jarvis </h1>
+<h2> How to run Jarvis </h2>
 
 ## Create a Virtual Environment
 - python -m venv venv,
 - venv\Scripts\activate
+
+
 
 ## Install Dependencies
 pip install -r requirements.txt
 
 ## Run Jarvis
 python agent.py console
+
+<h2>Watch video once (Recommended) </h2>
+SachdevaAI - https://www.youtube.com/@sachdevaAI
