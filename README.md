@@ -44,15 +44,15 @@ This project demonstrates how to connect real-world tools with LLMs to build a c
 ---
 
 ## How to get this code:
-git clone https://github.com/Gauravsachdeva23e/SachdevaAI_Jarvis_Code.git
-cd SachdevaAI_Jarvis_Code
+- git clone https://github.com/Gauravsachdeva23e/SachdevaAI_Jarvis_Code.git,
+- cd SachdevaAI_Jarvis_Code
 
 
 <h1> How to run Jarvis </h1>
 
 ## Create a Virtual Environment
-python -m venv venv
-venv\Scripts\activate          # For Windows
+- python -m venv venv,
+- venv\Scripts\activate
 
 ## Install Dependencies
 pip install -r requirements.txt
